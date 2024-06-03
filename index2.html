@@ -62,6 +62,12 @@
 
         let destination = { lat: 40.976764, lng: 27.510841 };
         let map, marker;
+        const districtColors = {
+            "ÇERKEZKÖY": "red",
+            "KAPAKLI": "blue",
+            "MALKARA": "green",
+            "ŞARKÖY": "orange"
+        };
 
         function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
@@ -80,6 +86,16 @@
                 destination.lat = event.latLng.lat();
                 destination.lng = event.latLng.lng();
             });
+
+            // Add school markers to the map
+            schools.forEach(school => {
+                new google.maps.Marker({
+                    position: { lat: school.lat, lng: school.lon },
+                    map: map,
+                    title: school.name,
+                    icon: `http://maps.google.com/mapfiles/ms/icons/${districtColors[school.district]}-dot.png`
+                });
+            });
         }
 
         function buildApiUrl(origins, destination) {
@@ -97,6 +113,8 @@
                 return data.rows.map((row, index) => ({
                     name: schools[index].name,
                     district: schools[index].district,
+                    lat: schools[index].lat,
+                    lon: schools[index].lon,
                     distance: row.elements[0].distance.text,
                     duration: row.elements[0].duration.text
                 }));
@@ -128,7 +146,7 @@
                 durationCell.className = "border px-4 py-2";
 
                 districtCell.textContent = distanceInfo.district;
-                nameCell.textContent = distanceInfo.name;
+                nameCell.innerHTML = `<a href="https://www.google.com/maps?q=${distanceInfo.lat},${distanceInfo.lon}" target="_blank" class="text-blue-500 hover:underline">${distanceInfo.name}</a>`;
                 distanceCell.textContent = distanceInfo.distance;
                 durationCell.textContent = translateDuration(distanceInfo.duration);
 
