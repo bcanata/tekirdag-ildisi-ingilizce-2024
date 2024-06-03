@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2024 İl Dışı İsteğe Bağlı Yer Değiştirme - Tekirdağ Mesafe Hesaplama</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+        #results {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+
+    <div class="container mx-auto p-4">
+        <h3 class="text-3xl font-bold mb-4 text-center">2024 İl Dışı İsteğe Bağlı Yer Değiştirme - Tekirdağ Mesafe Hesaplama</h3>
+        
+        <div id="map" class="mb-4 border-2 border-gray-300"></div>
+        
+        <div class="text-center mb-4">
+            <button onclick="hesapla()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Mesafe Hesapla
+            </button>
+        </div>
+
+        <div id="results" class="bg-white shadow-md rounded p-4">
+            <table class="table-auto w-full">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="px-4 py-2">Okul Adı</th>
+                        <th class="px-4 py-2">Mesafe</th>
+                        <th class="px-4 py-2">Seyahat Süresi</th>
+                    </tr>
+                </thead>
+                <tbody id="distanceResults"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const schools = [
+            { name: "Büyükşehir Belediyesi Gazi Mustafa Kemal Ortaokulu", lat: 41.2624649, lon: 27.965823 },
+            { name: "Fatih Sultan Mehmet İmam Hatip Ortaokulu", lat: 41.2688569, lon: 27.9652632 },
+            { name: "Osmanlı Ortaokulu", lat: 41.2672643, lon: 27.9816841 },
+            { name: "Sarbak Metal Cumhuriyet Anadolu Lisesi", lat: 41.2570134, lon: 27.9772077 },
+            { name: "Veliköy Organize Sanayi Bölgesi Mesleki ve Teknik Anadolu Lisesi", lat: 41.2322305, lon: 27.9214002 },
+            { name: "125.Yıl Ortaokulu", lat: 41.2640387, lon: 27.9721195 },
+            { name: "Aziz Sancar Anadolu Lisesi", lat: 41.310797, lon: 27.9523608 },
+            { name: "Kapaklı Belediyesi Ortaokulu", lat: 41.3382222, lon: 27.9769326 },
+            { name: "Kapaklı Gazi Ortaokulu", lat: 41.3270219, lon: 27.98272 },
+            { name: "Prof. Dr. Necmettin Erbakan İmam Hatip Ortaokulu", lat: 41.3249271, lon: 27.9777414 },
+            { name: "Zeliha-Mehmet Tusçuoğlu Ortaokulu", lat: 41.3266019, lon: 27.9820481 },
+            { name: "Şehit Selim Vural Ortaokulu", lat: 40.8931895, lon: 26.8970891 },
+            { name: "Mürefte Ortaokulu", lat: 40.6682039, lon: 27.2443576 }
+        ];
+
+        let destination = { lat: 40.976764, lng: 27.510841 };
+        let map, marker;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: destination,
+                zoom: 10
+            });
+
+            marker = new google.maps.Marker({
+                position: destination,
+                map: map,
+                draggable: true,
+                title: "Hedef Nokta"
+            });
+
+            marker.addListener('dragend', function(event) {
+                destination.lat = event.latLng.lat();
+                destination.lng = event.latLng.lng();
+            });
+        }
+
+        function buildApiUrl(origins, destination) {
+            const originStr = origins.map(o => `${o.lat},${o.lon}`).join('|');
+            const destStr = `${destination.lat},${destination.lng}`;
+            return `https://distancematrix.bugra.workers.dev/?origins=${originStr}&destinations=${destStr}`;
+        }
+
+        async function fetchDistances() {
+            const apiUrl = buildApiUrl(schools, destination);
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+
+            if (data.status === 'OK') {
+                return data.rows.map((row, index) => ({
+                    name: schools[index].name,
+                    distance: row.elements[0].distance.text,
+                    duration: row.elements[0].duration.text
+                }));
+            } else {
+                console.error('Error fetching distance data:', data.error_message);
+                return [];
+            }
+        }
+
+        async function hesapla() {
+            let distances = await fetchDistances();
+            
+            // Sort by distance
+            distances.sort((a, b) => a.distance.value - b.distance.value);
+
+            const resultsElement = document.getElementById('distanceResults');
+            resultsElement.innerHTML = '';
+
+            distances.forEach(distanceInfo => {
+                const row = document.createElement('tr');
+                const nameCell = document.createElement('td');
+                const distanceCell = document.createElement('td');
+                const durationCell = document.createElement('td');
+
+                nameCell.className = "border px-4 py-2";
+                distanceCell.className = "border px-4 py-2";
+                durationCell.className = "border px-4 py-2";
+
+                nameCell.textContent = distanceInfo.name;
+                distanceCell.textContent = distanceInfo.distance;
+                durationCell.textContent = translateDuration(distanceInfo.duration);
+
+                row.appendChild(nameCell);
+                row.appendChild(distanceCell);
+                row.appendChild(durationCell);
+                resultsElement.appendChild(row);
+            });
+        }
+
+        function translateDuration(duration) {
+            return duration
+                .replace("hour", "saat")
+                .replace("mins", "dakika");
+        }
+    </script>
+    <script async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCswkcuIlGVSWztacUDBS_NwVeivvOgRj8&callback=initMap&libraries=places">
+    </script>
+</body>
+</html>
