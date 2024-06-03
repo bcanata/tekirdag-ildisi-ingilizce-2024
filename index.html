@@ -32,8 +32,10 @@
             <table class="table-auto w-full">
                 <thead>
                     <tr class="bg-gray-200">
+                        <th class="px-4 py-2">İlçe</th>
                         <th class="px-4 py-2">Okul Adı</th>
-                        <th class="px-4 py-2">Seçilen Konuma Mesafe</th>
+                        <th class="px-4 py-2">Mesafe</th>
+                        <th class="px-4 py-2">Seyahat Süresi</th>
                     </tr>
                 </thead>
                 <tbody id="distanceResults"></tbody>
@@ -43,19 +45,19 @@
 
     <script>
         const schools = [
-            { name: "Büyükşehir Belediyesi Gazi Mustafa Kemal Ortaokulu", lat: 41.2624649, lon: 27.965823 },
-            { name: "Fatih Sultan Mehmet İmam Hatip Ortaokulu", lat: 41.2688569, lon: 27.9652632 },
-            { name: "Osmanlı Ortaokulu", lat: 41.2672643, lon: 27.9816841 },
-            { name: "Sarbak Metal Cumhuriyet Anadolu Lisesi", lat: 41.2570134, lon: 27.9772077 },
-            { name: "Veliköy Organize Sanayi Bölgesi Mesleki ve Teknik Anadolu Lisesi", lat: 41.2322305, lon: 27.9214002 },
-            { name: "125.Yıl Ortaokulu", lat: 41.2640387, lon: 27.9721195 },
-            { name: "Aziz Sancar Anadolu Lisesi", lat: 41.310797, lon: 27.9523608 },
-            { name: "Kapaklı Belediyesi Ortaokulu", lat: 41.3382222, lon: 27.9769326 },
-            { name: "Kapaklı Gazi Ortaokulu", lat: 41.3270219, lon: 27.98272 },
-            { name: "Prof. Dr. Necmettin Erbakan İmam Hatip Ortaokulu", lat: 41.3249271, lon: 27.9777414 },
-            { name: "Zeliha-Mehmet Tusçuoğlu Ortaokulu", lat: 41.3266019, lon: 27.9820481 },
-            { name: "Şehit Selim Vural Ortaokulu", lat: 40.8931895, lon: 26.8970891 },
-            { name: "Mürefte Ortaokulu", lat: 40.6682039, lon: 27.2443576 }
+            { name: "Büyükşehir Belediyesi Gazi Mustafa Kemal Ortaokulu", district: "ÇERKEZKÖY", lat: 41.2624649, lon: 27.965823 },
+            { name: "Fatih Sultan Mehmet İmam Hatip Ortaokulu", district: "ÇERKEZKÖY", lat: 41.2688569, lon: 27.9652632 },
+            { name: "Osmanlı Ortaokulu", district: "ÇERKEZKÖY", lat: 41.2672643, lon: 27.9816841 },
+            { name: "Sarbak Metal Cumhuriyet Anadolu Lisesi", district: "ÇERKEZKÖY", lat: 41.2570134, lon: 27.9772077 },
+            { name: "Veliköy Organize Sanayi Bölgesi Mesleki ve Teknik Anadolu Lisesi", district: "ÇERKEZKÖY", lat: 41.2322305, lon: 27.9214002 },
+            { name: "125.Yıl Ortaokulu", district: "ÇERKEZKÖY", lat: 41.2640387, lon: 27.9721195 },
+            { name: "Aziz Sancar Anadolu Lisesi", district: "KAPAKLI", lat: 41.310797, lon: 27.9523608 },
+            { name: "Kapaklı Belediyesi Ortaokulu", district: "KAPAKLI", lat: 41.3382222, lon: 27.9769326 },
+            { name: "Kapaklı Gazi Ortaokulu", district: "KAPAKLI", lat: 41.3270219, lon: 27.98272 },
+            { name: "Prof. Dr. Necmettin Erbakan İmam Hatip Ortaokulu", district: "KAPAKLI", lat: 41.3249271, lon: 27.9777414 },
+            { name: "Zeliha-Mehmet Tusçuoğlu Ortaokulu", district: "KAPAKLI", lat: 41.3266019, lon: 27.9820481 },
+            { name: "Şehit Selim Vural Ortaokulu", district: "MALKARA", lat: 40.8931895, lon: 26.8970891 },
+            { name: "Mürefte Ortaokulu", district: "ŞARKÖY", lat: 40.6682039, lon: 27.2443576 }
         ];
 
         let destination = { lat: 40.976764, lng: 27.510841 };
@@ -94,7 +96,9 @@
             if (data.status === 'OK') {
                 return data.rows.map((row, index) => ({
                     name: schools[index].name,
-                    distance: row.elements[0].distance.text
+                    district: schools[index].district,
+                    distance: row.elements[0].distance.text,
+                    duration: row.elements[0].duration.text
                 }));
             } else {
                 console.error('Error fetching distance data:', data.error_message);
@@ -103,25 +107,43 @@
         }
 
         async function hesapla() {
-            const distances = await fetchDistances();
+            let distances = await fetchDistances();
+            
+            // Sort by distance
+            distances.sort((a, b) => a.distance.value - b.distance.value);
+
             const resultsElement = document.getElementById('distanceResults');
             resultsElement.innerHTML = '';
 
             distances.forEach(distanceInfo => {
                 const row = document.createElement('tr');
+                const districtCell = document.createElement('td');
                 const nameCell = document.createElement('td');
                 const distanceCell = document.createElement('td');
+                const durationCell = document.createElement('td');
 
+                districtCell.className = "border px-4 py-2";
                 nameCell.className = "border px-4 py-2";
                 distanceCell.className = "border px-4 py-2";
+                durationCell.className = "border px-4 py-2";
 
+                districtCell.textContent = distanceInfo.district;
                 nameCell.textContent = distanceInfo.name;
                 distanceCell.textContent = distanceInfo.distance;
+                durationCell.textContent = translateDuration(distanceInfo.duration);
 
+                row.appendChild(districtCell);
                 row.appendChild(nameCell);
                 row.appendChild(distanceCell);
+                row.appendChild(durationCell);
                 resultsElement.appendChild(row);
             });
+        }
+
+        function translateDuration(duration) {
+            return duration
+                .replace("hour", "saat")
+                .replace("mins", "dakika");
         }
     </script>
     <script async
