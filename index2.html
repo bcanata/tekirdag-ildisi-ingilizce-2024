@@ -116,7 +116,8 @@
                     lat: schools[index].lat,
                     lon: schools[index].lon,
                     distance: row.elements[0].distance.text,
-                    duration: row.elements[0].duration.text
+                    duration: row.elements[0].duration.text,
+                    distanceValue: row.elements[0].distance.value
                 }));
             } else {
                 console.error('Error fetching distance data:', data.error_message);
@@ -128,7 +129,7 @@
             let distances = await fetchDistances();
             
             // Sort by distance
-            distances.sort((a, b) => a.distance.value - b.distance.value);
+            distances.sort((a, b) => a.distanceValue - b.distanceValue);
 
             const resultsElement = document.getElementById('distanceResults');
             resultsElement.innerHTML = '';
