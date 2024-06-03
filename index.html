@@ -83,7 +83,7 @@
         function buildApiUrl(origins, destination) {
             const originStr = origins.map(o => `${o.lat},${o.lon}`).join('|');
             const destStr = `${destination.lat},${destination.lng}`;
-            return `https://distancematrix.bugra.workers.dev/distance?origins=${originStr}&destinations=${destStr}`;
+            return `https://distancematrix.bugra.workers.dev/?origins=${originStr}&destinations=${destStr}`;
         }
 
         async function fetchDistances() {
@@ -109,8 +109,11 @@
 
             distances.forEach(distanceInfo => {
                 const row = document.createElement('tr');
-                const nameCell = document.createElement('td' class="border px-4 py-2");
-                const distanceCell = document.createElement('td' class="border px-4 py-2");
+                const nameCell = document.createElement('td');
+                const distanceCell = document.createElement('td');
+
+                nameCell.className = "border px-4 py-2";
+                distanceCell.className = "border px-4 py-2";
 
                 nameCell.textContent = distanceInfo.name;
                 distanceCell.textContent = distanceInfo.distance;
