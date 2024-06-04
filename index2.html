@@ -36,6 +36,9 @@
                         <th class="px-4 py-2">Okul Adı</th>
                         <th class="px-4 py-2">Mesafe</th>
                         <th class="px-4 py-2">Seyahat Süresi</th>
+                        <th class="px-4 py-2">Hizmet Bölgesi</th>
+                        <th class="px-4 py-2">Hizmet Alanı</th>
+                        <th class="px-4 py-2">Kontenjan</th>
                     </tr>
                 </thead>
                 <tbody id="distanceResults"></tbody>
@@ -45,19 +48,19 @@
 
     <script>
         const schools = [
-            { name: "Büyükşehir Belediyesi Gazi Mustafa Kemal Ortaokulu", district: "ÇERKEZKÖY", lat: 41.2624649, lon: 27.965823 },
-            { name: "Fatih Sultan Mehmet İmam Hatip Ortaokulu", district: "ÇERKEZKÖY", lat: 41.2688569, lon: 27.9652632 },
-            { name: "Osmanlı Ortaokulu", district: "ÇERKEZKÖY", lat: 41.2672643, lon: 27.9816841 },
-            { name: "Sarbak Metal Cumhuriyet Anadolu Lisesi", district: "ÇERKEZKÖY", lat: 41.2570134, lon: 27.9772077 },
-            { name: "Veliköy Organize Sanayi Bölgesi Mesleki ve Teknik Anadolu Lisesi", district: "ÇERKEZKÖY", lat: 41.2322305, lon: 27.9214002 },
-            { name: "125.Yıl Ortaokulu", district: "ÇERKEZKÖY", lat: 41.2640387, lon: 27.9721195 },
-            { name: "Aziz Sancar Anadolu Lisesi", district: "KAPAKLI", lat: 41.310797, lon: 27.9523608 },
-            { name: "Kapaklı Belediyesi Ortaokulu", district: "KAPAKLI", lat: 41.3382222, lon: 27.9769326 },
-            { name: "Kapaklı Gazi Ortaokulu", district: "KAPAKLI", lat: 41.3270219, lon: 27.98272 },
-            { name: "Prof. Dr. Necmettin Erbakan İmam Hatip Ortaokulu", district: "KAPAKLI", lat: 41.3249271, lon: 27.9777414 },
-            { name: "Zeliha-Mehmet Tusçuoğlu Ortaokulu", district: "KAPAKLI", lat: 41.3266019, lon: 27.9820481 },
-            { name: "Şehit Selim Vural Ortaokulu", district: "MALKARA", lat: 40.8931895, lon: 26.8970891 },
-            { name: "Mürefte Ortaokulu", district: "ŞARKÖY", lat: 40.6682039, lon: 27.2443576 }
+            { id: 763285, name: "Büyükşehir Belediyesi Gazi Mustafa Kemal Ortaokulu", district: "ÇERKEZKÖY", lat: 41.2624649, lon: 27.965823, col1: 1, col2: 5, col3: 1 },
+            { id: 763422, name: "Fatih Sultan Mehmet İmam Hatip Ortaokulu", district: "ÇERKEZKÖY", lat: 41.2688569, lon: 27.9652632, col1: 1, col2: 5, col3: 1 },
+            { id: 768444, name: "Osmanlı Ortaokulu", district: "ÇERKEZKÖY", lat: 41.2672643, lon: 27.9816841, col1: 1, col2: 5, col3: 2 },
+            { id: 972640, name: "Sarbak Metal Cumhuriyet Anadolu Lisesi", district: "ÇERKEZKÖY", lat: 41.2570134, lon: 27.9772077, col1: 1, col2: 5, col3: 1 },
+            { id: 767465, name: "Veliköy Organize Sanayi Bölgesi Mesleki ve Teknik Anadolu Lisesi", district: "ÇERKEZKÖY", lat: 41.2322305, lon: 27.9214002, col1: 1, col2: 4, col3: 1 },
+            { id: 975371, name: "125.Yıl Ortaokulu", district: "ÇERKEZKÖY", lat: 41.2640387, lon: 27.9721195, col1: 1, col2: 5, col3: 1 },
+            { id: 765062, name: "Aziz Sancar Anadolu Lisesi", district: "KAPAKLI", lat: 41.310797, lon: 27.9523608, col1: 1, col2: 4, col3: 1 },
+            { id: 756060, name: "Kapaklı Belediyesi Ortaokulu", district: "KAPAKLI", lat: 41.3382222, lon: 27.9769326, col1: 1, col2: 4, col3: 4 },
+            { id: 756055, name: "Kapaklı Gazi Ortaokulu", district: "KAPAKLI", lat: 41.3270219, lon: 27.98272, col1: 1, col2: 4, col3: 3 },
+            { id: 756053, name: "Prof. Dr. Necmettin Erbakan İmam Hatip Ortaokulu", district: "KAPAKLI", lat: 41.3249271, lon: 27.9777414, col1: 1, col2: 4, col3: 1 },
+            { id: 775078, name: "Zeliha-Mehmet Tusçuoğlu Ortaokulu", district: "KAPAKLI", lat: 41.3266019, lon: 27.9820481, col1: 1, col2: 4, col3: 2 },
+            { id: 708818, name: "Şehit Selim Vural Ortaokulu", district: "MALKARA", lat: 40.8931895, lon: 26.8970891, col1: 1, col2: 5, col3: 1 },
+            { id: 706788, name: "Mürefte Ortaokulu", district: "ŞARKÖY", lat: 40.6682039, lon: 27.2443576, col1: 1, col2: 4, col3: 1 }
         ];
 
         let destination = { lat: 40.976764, lng: 27.510841 };
@@ -117,7 +120,10 @@
                     lon: schools[index].lon,
                     distance: row.elements[0].distance.text,
                     duration: row.elements[0].duration.text,
-                    distanceValue: row.elements[0].distance.value
+                    distanceValue: row.elements[0].distance.value,
+                    col1: schools[index].col1,
+                    col2: schools[index].col2,
+                    col3: schools[index].col3
                 }));
             } else {
                 console.error('Error fetching distance data:', data.error_message);
@@ -140,25 +146,37 @@
                 const nameCell = document.createElement('td');
                 const distanceCell = document.createElement('td');
                 const durationCell = document.createElement('td');
-
+                const col1Cell = document.createElement('td');
+                const col2Cell = document.createElement('td');
+                const col3Cell = document.createElement('td');
+    
                 districtCell.className = "border px-4 py-2";
                 nameCell.className = "border px-4 py-2";
                 distanceCell.className = "border px-4 py-2";
                 durationCell.className = "border px-4 py-2";
-
+                col1Cell.className = "border px-4 py-2";
+                col2Cell.className = "border px-4 py-2";
+                col3Cell.className = "border px-4 py-2";
+    
                 districtCell.textContent = distanceInfo.district;
                 nameCell.innerHTML = `<a href="https://www.google.com/maps?q=${distanceInfo.lat},${distanceInfo.lon}" target="_blank" class="text-blue-500 hover:underline">${distanceInfo.name}</a>`;
                 distanceCell.textContent = distanceInfo.distance;
                 durationCell.textContent = translateDuration(distanceInfo.duration);
-
+                col1Cell.textContent = distanceInfo.col1;
+                col2Cell.textContent = distanceInfo.col2;
+                col3Cell.textContent = distanceInfo.col3;
+    
                 row.appendChild(districtCell);
                 row.appendChild(nameCell);
                 row.appendChild(distanceCell);
                 row.appendChild(durationCell);
+                row.appendChild(col1Cell);
+                row.appendChild(col2Cell);
+                row.appendChild(col3Cell);
                 resultsElement.appendChild(row);
             });
         }
-
+    
         function translateDuration(duration) {
             return duration
                 .replace("hour", "saat")
