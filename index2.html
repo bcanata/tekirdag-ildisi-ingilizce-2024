@@ -91,14 +91,15 @@
                 destination.lng = event.latLng.lng();
             });
 
-            // Add school markers to the map
+            // Add school markers to the map using Advanced Markers
             schools.forEach(school => {
-                new google.maps.Marker({
+                const advancedMarker = new google.maps.marker.AdvancedMarkerElement({
                     position: { lat: school.lat, lng: school.lon },
                     map: map,
                     title: school.name,
                     icon: `http://maps.google.com/mapfiles/ms/icons/${districtColors[school.district]}-dot.png`
                 });
+                advancedMarker.setMap(map);
             });
         }
 
