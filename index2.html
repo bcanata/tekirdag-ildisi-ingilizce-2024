@@ -74,34 +74,34 @@
         };
 
         function initMap() {
-          map = new google.maps.Map(document.getElementById('map'), {
-            center: destination,
-            zoom: 10
-          });
-        
-          marker = new google.maps.Marker({
-            position: destination,
-            map: map,
-            draggable: true,
-            title: "Hedef Nokta"
-          });
-        
-          marker.addListener('dragend', function(event) {
-            destination.lat = event.latLng.lat();
-            destination.lng = event.latLng.lng();
-          });
-        
-          // Add school markers to the map
-          schools.forEach(school => {
-            const marker = new google.maps.Marker({
-              position: { lat: school.lat, lng: school.lon },
-              map: map,
-              title: school.name,
-              icon: `http://maps.google.com/mapfiles/ms/icons/${districtColors[school.district]}-dot.png`
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: destination,
+                zoom: 10,
+                mapId: "YOUR_MAP_ID" // Replace with your map ID
             });
-          });
-        }
 
+            marker = new google.maps.Marker({
+                position: destination,
+                map: map,
+                draggable: true,
+                title: "Hedef Nokta"
+            });
+
+            marker.addListener('dragend', function(event) {
+                destination.lat = event.latLng.lat();
+                destination.lng = event.latLng.lng();
+            });
+
+            // Add school markers to the map using Advanced Markers
+            schools.forEach(school => {
+                const advancedMarker = new google.maps.marker.AdvancedMarkerElement({
+                    map,
+                    position: { lat: school.lat, lng: school.lon },
+                    title: school.name,
+                    icon: `http://maps.google.com/mapfiles/ms/icons/${districtColors[school.district]}-dot.png`
+                });
+            });
+        }
 
         function buildApiUrl(origins, destination) {
             const originStr = origins.map(o => `${o.lat},${o.lon}`).join('|');
