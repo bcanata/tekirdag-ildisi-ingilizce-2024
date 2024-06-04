@@ -4,23 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2024 İl Dışı İsteğe Bağlı Yer Değiştirme - Tekirdağ Mesafe Hesaplama</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <style>
-        #map {
-            height: 400px;
-            width: 100%;
-        }
-        #results {
-            margin-top: 20px;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
 
     <div class="container mx-auto p-4">
         <h3 class="text-3xl font-bold mb-4 text-center">2024 İl Dışı İsteğe Bağlı Yer Değiştirme - Tekirdağ Mesafe Hesaplama</h3>
         
-        <div id="map" class="mb-4 border-2 border-gray-300"></div>
+        <div id="map" class="h-96 w-full mb-4 border-2 border-gray-300"></div>
         
         <div class="text-center mb-4">
             <button onclick="hesapla()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
@@ -28,7 +20,7 @@
             </button>
         </div>
 
-        <div id="results" class="bg-white shadow-md rounded p-4">
+        <div id="results" class="bg-white shadow-md rounded p-4 overflow-x-scroll">
             <table class="table-auto w-full">
                 <thead>
                     <tr class="bg-gray-200">
@@ -36,6 +28,10 @@
                         <th class="px-4 py-2">Okul Adı</th>
                         <th class="px-4 py-2">Mesafe</th>
                         <th class="px-4 py-2">Seyahat Süresi</th>
+                        <th class="px-4 py-2">Hizmet Bölgesi</th>
+                        <th class="px-4 py-2">Hizmet Alanı</th>
+                        <th class="px-4 py-2">Kontenjan</th>
+                        <th class="px-4 py-2">Hizmet Puanı</th>
                     </tr>
                 </thead>
                 <tbody id="distanceResults"></tbody>
@@ -45,20 +41,21 @@
 
     <script>
         const schools = [
-            { name: "Büyükşehir Belediyesi Gazi Mustafa Kemal Ortaokulu", district: "ÇERKEZKÖY", lat: 41.2624649, lon: 27.965823 },
-            { name: "Fatih Sultan Mehmet İmam Hatip Ortaokulu", district: "ÇERKEZKÖY", lat: 41.2688569, lon: 27.9652632 },
-            { name: "Osmanlı Ortaokulu", district: "ÇERKEZKÖY", lat: 41.2672643, lon: 27.9816841 },
-            { name: "Sarbak Metal Cumhuriyet Anadolu Lisesi", district: "ÇERKEZKÖY", lat: 41.2570134, lon: 27.9772077 },
-            { name: "Veliköy Organize Sanayi Bölgesi Mesleki ve Teknik Anadolu Lisesi", district: "ÇERKEZKÖY", lat: 41.2322305, lon: 27.9214002 },
-            { name: "125.Yıl Ortaokulu", district: "ÇERKEZKÖY", lat: 41.2640387, lon: 27.9721195 },
-            { name: "Aziz Sancar Anadolu Lisesi", district: "KAPAKLI", lat: 41.310797, lon: 27.9523608 },
-            { name: "Kapaklı Belediyesi Ortaokulu", district: "KAPAKLI", lat: 41.3382222, lon: 27.9769326 },
-            { name: "Kapaklı Gazi Ortaokulu", district: "KAPAKLI", lat: 41.3270219, lon: 27.98272 },
-            { name: "Prof. Dr. Necmettin Erbakan İmam Hatip Ortaokulu", district: "KAPAKLI", lat: 41.3249271, lon: 27.9777414 },
-            { name: "Zeliha-Mehmet Tusçuoğlu Ortaokulu", district: "KAPAKLI", lat: 41.3266019, lon: 27.9820481 },
-            { name: "Şehit Selim Vural Ortaokulu", district: "MALKARA", lat: 40.8931895, lon: 26.8970891 },
-            { name: "Mürefte Ortaokulu", district: "ŞARKÖY", lat: 40.6682039, lon: 27.2443576 }
+            { id: 763285, name: "Büyükşehir Belediyesi Gazi Mustafa Kemal Ortaokulu", district: "ÇERKEZKÖY", url: "https://bbgazimustafakemal.meb.k12.tr/", lat: 41.2624649, lon: 27.965823, col1: 1, col2: 5, col3: 1, puan: 16},
+            { id: 763422, name: "Fatih Sultan Mehmet İmam Hatip Ortaokulu", district: "ÇERKEZKÖY", url: "https://fsmiho.meb.k12.tr/", lat: 41.2688569, lon: 27.9652632, col1: 1, col2: 5, col3: 1, puan: 16},
+            { id: 768444, name: "Osmanlı Ortaokulu", district: "ÇERKEZKÖY", url: "https://osmanliortaokulu59.meb.k12.tr/", lat: 41.2672643, lon: 27.9816841, col1: 1, col2: 5, col3: 2, puan: 16}, // Missing comma added here
+            { id: 972640, name: "Sarbak Metal Cumhuriyet Anadolu Lisesi", url: "https://sarbakmetal59.meb.k12.tr/", district: "ÇERKEZKÖY", lat: 41.2570134, lon: 27.9772077, col1: 1, col2: 5, col3: 1, puan: 16 },
+            { id: 767465, name: "Veliköy Organize Sanayi Bölgesi Mesleki ve Teknik Anadolu Lisesi", district: "ÇERKEZKÖY", url: "https://velikoyosb.meb.k12.tr/", lat: 41.2322305, lon: 27.9214002, col1: 1, col2: 4, col3: 1, puan: 14 },
+            { id: 975371, name: "125.Yıl Ortaokulu", district: "ÇERKEZKÖY", url: "https://125yilortaokulu.meb.k12.tr/", lat: 41.2640387, lon: 27.9721195, col1: 1, col2: 5, col3: 1, puan: 16},
+            { id: 765062, name: "Aziz Sancar Anadolu Lisesi", district: "KAPAKLI", url: "https://azizsancaranadolu.meb.k12.tr/", lat: 41.310797, lon: 27.9523608, col1: 1, col2: 4, col3: 1, puan: 14},
+            { id: 756060, name: "Kapaklı Belediyesi Ortaokulu", district: "KAPAKLI", url: "https://kapaklibelediyesioo.meb.k12.tr/", lat: 41.3382222, lon: 27.9769326, col1: 1, col2: 4, col3: 4, puan: 14},
+            { id: 756055, name: "Kapaklı Gazi Ortaokulu", district: "KAPAKLI", url: "https://kapakligaziortaokulu.meb.k12.tr/", lat: 41.3270219, lon: 27.98272, col1: 1, col2: 4, col3: 3, puan: 14},
+            { id: 756053, name: "Prof. Dr. Necmettin Erbakan İmam Hatip Ortaokulu", district: "KAPAKLI", url: "https://kapakliiho.meb.k12.tr/", lat: 41.3249271, lon: 27.9777414, col1: 1, col2: 4, col3: 1, puan: 14 },
+            { id: 775078, name: "Zeliha-Mehmet Tusçuoğlu Ortaokulu", district: "KAPAKLI", url: "https://775078.meb.k12.tr/", lat: 41.3266019, lon: 27.9820481, col1: 1, col2: 4, col3: 2, puan: 0 },
+            { id: 708818, name: "Şehit Selim Vural Ortaokulu", district: "MALKARA", url: "https://sehitselimvuralortaokulu.meb.k12.tr/", lat: 40.8931895, lon: 26.8970891, col1: 1, col2: 5, col3: 1, puan: 16},
+            { id: 706788, name: "Mürefte Ortaokulu", district: "ŞARKÖY", url: "https://murefteortaokulu.meb.k12.tr/", lat: 40.6682039, lon: 27.2443576, col1: 1, col2: 4, col3: 1, puan: 14}
         ];
+
 
         let destination = { lat: 40.976764, lng: 27.510841 };
         let map, marker;
@@ -70,33 +67,38 @@
         };
 
         function initMap() {
-            map = new google.maps.Map(document.getElementById('map'), {
-                center: destination,
-                zoom: 10
-            });
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: destination,
+            zoom: 10,
+            mapId: "DEMO_MAP_ID" // Replace with your map ID
+        });
 
-            marker = new google.maps.Marker({
-                position: destination,
+        // Check if AdvancedMarkerElement is available
+        const MarkerClass = google.maps.Marker || google.maps.marker.AdvancedMarkerElement;
+
+        marker = new MarkerClass({
+            position: destination,
+            map: map,
+            draggable: true,
+            title: "Hedef Nokta"
+        });
+
+        marker.addListener('dragend', function(event) {
+            destination.lat = event.latLng.lat();
+            destination.lng = event.latLng.lng();
+        });
+
+        // Add school markers to the map
+        schools.forEach(school => {
+            new MarkerClass({
+                position: { lat: school.lat, lng: school.lon },
                 map: map,
-                draggable: true,
-                title: "Hedef Nokta"
+                title: school.name,
+                icon: `http://maps.google.com/mapfiles/ms/icons/${districtColors[school.district]}-dot.png`
             });
+        });
+    }
 
-            marker.addListener('dragend', function(event) {
-                destination.lat = event.latLng.lat();
-                destination.lng = event.latLng.lng();
-            });
-
-            // Add school markers to the map
-            schools.forEach(school => {
-                new google.maps.Marker({
-                    position: { lat: school.lat, lng: school.lon },
-                    map: map,
-                    title: school.name,
-                    icon: `http://maps.google.com/mapfiles/ms/icons/${districtColors[school.district]}-dot.png`
-                });
-            });
-        }
 
         function buildApiUrl(origins, destination) {
             const originStr = origins.map(o => `${o.lat},${o.lon}`).join('|');
@@ -108,16 +110,21 @@
             const apiUrl = buildApiUrl(schools, destination);
             const response = await fetch(apiUrl);
             const data = await response.json();
-
+        
             if (data.status === 'OK') {
                 return data.rows.map((row, index) => ({
                     name: schools[index].name,
                     district: schools[index].district,
                     lat: schools[index].lat,
                     lon: schools[index].lon,
+                    url: schools[index].url, // Ensure url is included
                     distance: row.elements[0].distance.text,
                     duration: row.elements[0].duration.text,
-                    distanceValue: row.elements[0].distance.value
+                    distanceValue: row.elements[0].distance.value,
+                    col1: schools[index].col1,
+                    col2: schools[index].col2,
+                    col3: schools[index].col3,
+                    puan: schools[index].puan
                 }));
             } else {
                 console.error('Error fetching distance data:', data.error_message);
@@ -125,48 +132,67 @@
             }
         }
 
+
         async function hesapla() {
             let distances = await fetchDistances();
             
             // Sort by distance
             distances.sort((a, b) => a.distanceValue - b.distanceValue);
-
+        
             const resultsElement = document.getElementById('distanceResults');
             resultsElement.innerHTML = '';
-
+        
             distances.forEach(distanceInfo => {
                 const row = document.createElement('tr');
                 const districtCell = document.createElement('td');
                 const nameCell = document.createElement('td');
                 const distanceCell = document.createElement('td');
                 const durationCell = document.createElement('td');
-
+                const col1Cell = document.createElement('td');
+                const col2Cell = document.createElement('td');
+                const col3Cell = document.createElement('td');
+                const puanCell = document.createElement('td');
+                
                 districtCell.className = "border px-4 py-2";
                 nameCell.className = "border px-4 py-2";
                 distanceCell.className = "border px-4 py-2";
                 durationCell.className = "border px-4 py-2";
-
+                col1Cell.className = "border px-4 py-2";
+                col2Cell.className = "border px-4 py-2";
+                col3Cell.className = "border px-4 py-2";
+                puanCell.className = "border px-4 py-2";
+        
                 districtCell.textContent = distanceInfo.district;
-                nameCell.innerHTML = `<a href="https://www.google.com/maps?q=${distanceInfo.lat},${distanceInfo.lon}" target="_blank" class="text-blue-500 hover:underline">${distanceInfo.name}</a>`;
+                nameCell.innerHTML = `<a href="${distanceInfo.url}" target="_blank" class="text-blue-500 hover:underline">${distanceInfo.name}</a>
+                                      <a href="https://www.google.com/maps?q=${distanceInfo.lat},${distanceInfo.lon}" target="_blank" class="ml-2 text-blue-500 hover:underline"><i class="fas fa-map-marker-alt"></i></a>`;
                 distanceCell.textContent = distanceInfo.distance;
                 durationCell.textContent = translateDuration(distanceInfo.duration);
-
+                col1Cell.textContent = distanceInfo.col1;
+                col2Cell.textContent = distanceInfo.col2;
+                col3Cell.textContent = distanceInfo.col3;
+                puanCell.textContent = distanceInfo.puan;
+        
                 row.appendChild(districtCell);
                 row.appendChild(nameCell);
                 row.appendChild(distanceCell);
                 row.appendChild(durationCell);
+                row.appendChild(col1Cell);
+                row.appendChild(col2Cell);
+                row.appendChild(col3Cell);
+                row.appendChild(puanCell);
                 resultsElement.appendChild(row);
             });
         }
-
+    
         function translateDuration(duration) {
             return duration
                 .replace("hour", "saat")
                 .replace("mins", "dakika");
         }
     </script>
-    <script async
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCswkcuIlGVSWztacUDBS_NwVeivvOgRj8&callback=initMap&libraries=places">
+    <script async defer 
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCswkcuIlGVSWztacUDBS_NwVeivvOgRj8&callback=initMap&libraries=marker,places">
     </script>
+
 </body>
 </html>
