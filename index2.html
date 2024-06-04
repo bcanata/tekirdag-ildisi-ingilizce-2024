@@ -5,22 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2024 İl Dışı İsteğe Bağlı Yer Değiştirme - Tekirdağ Mesafe Hesaplama</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        #map {
-            height: 400px;
-            width: 100%;
-        }
-        #results {
-            margin-top: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-DyZ88mC6Up2uqS4h/1yA4DxoH/p2c5RnbPZr3GyQ5E+sbIXN4ByT0ds9hOP2dF9c8zKVD5pH/tIcW3s2IhQ6lw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
 
     <div class="container mx-auto p-4">
         <h3 class="text-3xl font-bold mb-4 text-center">2024 İl Dışı İsteğe Bağlı Yer Değiştirme - Tekirdağ Mesafe Hesaplama</h3>
         
-        <div id="map" class="mb-4 border-2 border-gray-300"></div>
+        <div id="map" class="h-96 w-full mb-4 border-2 border-gray-300"></div>
         
         <div class="text-center mb-4">
             <button onclick="hesapla()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
@@ -139,10 +131,10 @@
             
             // Sort by distance
             distances.sort((a, b) => a.distanceValue - b.distanceValue);
-
+        
             const resultsElement = document.getElementById('distanceResults');
             resultsElement.innerHTML = '';
-
+        
             distances.forEach(distanceInfo => {
                 const row = document.createElement('tr');
                 const districtCell = document.createElement('td');
@@ -153,7 +145,7 @@
                 const col2Cell = document.createElement('td');
                 const col3Cell = document.createElement('td');
                 const puanCell = document.createElement('td');
-
+                
                 districtCell.className = "border px-4 py-2";
                 nameCell.className = "border px-4 py-2";
                 distanceCell.className = "border px-4 py-2";
@@ -162,16 +154,17 @@
                 col2Cell.className = "border px-4 py-2";
                 col3Cell.className = "border px-4 py-2";
                 puanCell.className = "border px-4 py-2";
-
+        
                 districtCell.textContent = distanceInfo.district;
-                nameCell.innerHTML = `<a href="https://www.google.com/maps?q=${distanceInfo.lat},${distanceInfo.lon}" target="_blank" class="text-blue-500 hover:underline">${distanceInfo.name}</a>`;
+                nameCell.innerHTML = `<a href="${distanceInfo.url}" target="_blank" class="text-blue-500 hover:underline">${distanceInfo.name}</a>
+                                      <a href="https://www.google.com/maps?q=${distanceInfo.lat},${distanceInfo.lon}" target="_blank" class="ml-2 text-blue-500 hover:underline"><i class="fas fa-map-marker-alt"></i></a>`;
                 distanceCell.textContent = distanceInfo.distance;
                 durationCell.textContent = translateDuration(distanceInfo.duration);
                 col1Cell.textContent = distanceInfo.col1;
                 col2Cell.textContent = distanceInfo.col2;
                 col3Cell.textContent = distanceInfo.col3;
                 puanCell.textContent = distanceInfo.puan;
-
+        
                 row.appendChild(districtCell);
                 row.appendChild(nameCell);
                 row.appendChild(distanceCell);
