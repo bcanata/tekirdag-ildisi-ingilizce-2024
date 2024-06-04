@@ -92,9 +92,9 @@
                     position: { lat: school.lat, lng: school.lon },
                     title: school.name
                 });
-                advancedMarker.setMap(map); // Ensure to set the map for each marker
             });
         }
+
 
         function buildApiUrl(origins, destination) {
             const originStr = origins.map(o => `${o.lat},${o.lon}`).join('|');
@@ -106,13 +106,14 @@
             const apiUrl = buildApiUrl(schools, destination);
             const response = await fetch(apiUrl);
             const data = await response.json();
-
+        
             if (data.status === 'OK') {
                 return data.rows.map((row, index) => ({
                     name: schools[index].name,
                     district: schools[index].district,
                     lat: schools[index].lat,
                     lon: schools[index].lon,
+                    url: schools[index].url, // Ensure url is included
                     distance: row.elements[0].distance.text,
                     duration: row.elements[0].duration.text,
                     distanceValue: row.elements[0].distance.value,
@@ -126,6 +127,7 @@
                 return [];
             }
         }
+
 
         async function hesapla() {
             let distances = await fetchDistances();
@@ -185,7 +187,8 @@
         }
     </script>
     <script async defer 
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCswkcuIlGVSWztacUDBS_NwVeivvOgRj8&callback=initMap&libraries=places">
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCswkcuIlGVSWztacUDBS_NwVeivvOgRj8&callback=initMap&libraries=marker,places">
     </script>
+
 </body>
 </html>
