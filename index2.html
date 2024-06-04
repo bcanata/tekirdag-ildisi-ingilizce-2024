@@ -153,7 +153,7 @@
                 const col2Cell = document.createElement('td');
                 const col3Cell = document.createElement('td');
                 const puanCell = document.createElement('td');
-    
+
                 districtCell.className = "border px-4 py-2";
                 nameCell.className = "border px-4 py-2";
                 distanceCell.className = "border px-4 py-2";
@@ -162,7 +162,7 @@
                 col2Cell.className = "border px-4 py-2";
                 col3Cell.className = "border px-4 py-2";
                 puanCell.className = "border px-4 py-2";
-    
+
                 districtCell.textContent = distanceInfo.district;
                 nameCell.innerHTML = `<a href="https://www.google.com/maps?q=${distanceInfo.lat},${distanceInfo.lon}" target="_blank" class="text-blue-500 hover:underline">${distanceInfo.name}</a>`;
                 distanceCell.textContent = distanceInfo.distance;
@@ -171,7 +171,7 @@
                 col2Cell.textContent = distanceInfo.col2;
                 col3Cell.textContent = distanceInfo.col3;
                 puanCell.textContent = distanceInfo.puan;
-    
+
                 row.appendChild(districtCell);
                 row.appendChild(nameCell);
                 row.appendChild(distanceCell);
